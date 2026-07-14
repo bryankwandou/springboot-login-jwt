@@ -53,9 +53,9 @@ export function LoginForm() {
 
   return (
     <form className="panel form-panel" onSubmit={handleSubmit} noValidate>
-      <h1>Masuk ke Dashboard</h1>
+      <h1>Masuk ke Sistem</h1>
       <p className="muted">
-        Gunakan akun terdaftar untuk mendapatkan token JWT dan mengakses modul CRUD.
+        Gunakan akun yang telah terdaftar untuk memperoleh token JWT dan melanjutkan ke dashboard.
       </p>
 
       <label htmlFor="login-email">Email</label>
@@ -89,7 +89,7 @@ export function LoginForm() {
       )}
 
       <button type="submit" disabled={loading}>
-        {loading ? "Memproses login..." : "Masuk"}
+        {loading ? "Memproses masuk..." : "Masuk"}
       </button>
     </form>
   );

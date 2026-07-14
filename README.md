@@ -1,6 +1,6 @@
-# Next.js JWT CRUD MVP
+# Next.js JWT CRUD Application
 
-MVP ini dibuat untuk assignment internship Web2 dengan fokus pada praktik engineering dasar:
+Proyek ini disusun untuk kebutuhan evaluasi teknis dengan fokus pada praktik engineering dasar:
 - JWT authentication
 - Authorization Bearer Token
 - Protected route
@@ -8,7 +8,7 @@ MVP ini dibuat untuk assignment internship Web2 dengan fokus pada praktik engine
 - Clean structure dan dokumentasi
 
 ## Assumptions
-- Penyimpanan data masih in-memory (belum PostgreSQL) untuk mempermudah demo lokal.
+- Penyimpanan data masih in-memory (belum PostgreSQL) untuk mempermudah evaluasi lokal.
 - Fokus tahap ini adalah fondasi arsitektur dan alur fungsional.
 - Tidak ada seeded user bawaan. Akun dibuat melalui endpoint registrasi.
 
@@ -46,11 +46,11 @@ docs/ARCHITECTURE.md
 ```
 
 ## Authentication Flow
-1. User registrasi di `/register` lalu login di `/login`.
+1. Pengguna registrasi di `/register` lalu masuk di `/login`.
 2. API memvalidasi email dan kata sandi.
 3. Server menerbitkan JWT.
 4. Token disimpan di local storage untuk header API.
-5. Semua CRUD call wajib kirim `Authorization: Bearer <token>`.
+5. Semua permintaan CRUD wajib mengirim `Authorization: Bearer <token>`.
 6. Endpoint `GET /api/auth/me` memverifikasi token aktif.
 7. Logout menghapus token lokal.
 
@@ -60,7 +60,7 @@ docs/ARCHITECTURE.md
 - Update: ubah item via prompt update.
 - Delete: hapus item dengan konfirmasi.
 
-Setiap aksi menampilkan status loading, validasi, dan feedback.
+Setiap aksi menampilkan status pemuatan, validasi, dan umpan balik.
 
 ## Run Project
 ```bash
@@ -72,9 +72,9 @@ Buka:
 - `http://localhost:3000`
 
 Langkah uji akun:
-1. Akses halaman register.
+1. Akses halaman registrasi.
 2. Buat akun baru.
-3. Login dengan akun tersebut.
+3. Masuk dengan akun tersebut.
 
 ## Testing Checklist
 - Login success dan failure

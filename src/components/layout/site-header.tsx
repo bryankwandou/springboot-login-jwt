@@ -10,7 +10,7 @@ export function SiteHeader() {
     <header className="site-header">
       <div className="container nav-wrap">
         <Link href="/" className="brand" aria-label="Halaman utama">
-          Next.js JWT MVP
+          Sistem Akses Data JWT
         </Link>
 
         <nav className="nav-links" aria-label="Navigasi utama">

@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthToken } from "@/hooks/use-auth";
 import { logout } from "@/services/auth-client";
@@ -19,20 +19,13 @@ export function DashboardClient() {
   const [feedback, setFeedback] = useState("");
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    if (!ready) {
-      return;
-    }
+  const handleLogout = useCallback(async () => {
+    await logout();
+    router.push("/login");
+    router.refresh();
+  }, [router]);
 
-    if (!token) {
-      router.push("/login");
-      return;
-    }
-
-    void loadItems(token);
-  }, [ready, token, router]);
-
-  async function loadItems(authToken: string) {
+  const loadItems = useCallback(async (authToken: string) => {
     setLoadingItems(true);
     setError("");
 
@@ -50,7 +43,24 @@ export function DashboardClient() {
     } finally {
       setLoadingItems(false);
     }
-  }
+  }, [handleLogout]);
+
+  useEffect(() => {
+    if (!ready) {
+      return;
+    }
+
+    if (!token) {
+      router.push("/login");
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      void loadItems(token);
+    }, 0);
+
+    return () => window.clearTimeout(timer);
+  }, [ready, token, router, loadItems]);
 
   async function handleCreate(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -143,12 +153,6 @@ export function DashboardClient() {
     }
   }
 
-  async function handleLogout() {
-    await logout();
-    router.push("/login");
-    router.refresh();
-  }
-
   if (!ready) {
     return <p className="muted">Memeriksa sesi login...</p>;
   }
@@ -164,7 +168,7 @@ export function DashboardClient() {
         </div>
 
         <p className="muted">
-          Semua request data pada halaman ini menggunakan Authorization Bearer Token.
+          Seluruh permintaan data pada halaman ini mengirim Authorization Bearer Token.
         </p>
 
         <form className="form-panel" onSubmit={handleCreate} noValidate>
@@ -186,13 +190,13 @@ export function DashboardClient() {
           />
 
           <button type="submit" disabled={saving}>
-            {saving ? "Menyimpan..." : "Tambah Data"}
+            {saving ? "Menyimpan..." : "Simpan Entri"}
           </button>
         </form>
       </section>
 
       <section className="panel">
-        <h2>Daftar Data</h2>
+        <h2>Daftar Entri</h2>
 
         {error && (
           <div className="alert error" role="alert">
@@ -210,10 +214,10 @@ export function DashboardClient() {
           <p className="muted">Memuat data...</p>
         ) : items.length === 0 ? (
           <div className="empty-state">
-            <p>Belum ada data. Tambahkan item pertama melalui formulir di samping.</p>
+            <p>Belum ada entri yang tersedia. Gunakan formulir di samping untuk menambahkan data.</p>
           </div>
         ) : (
-          <ul className="items-list" aria-label="Daftar data CRUD">
+          <ul className="items-list" aria-label="Daftar entri CRUD">
             {items.map((item) => (
               <li key={item.id} className="item-card">
                 <h3>{item.title}</h3>
