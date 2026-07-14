@@ -1,242 +1,116 @@
-"use client";
+import Link from "next/link";
 
-import { useMemo, useState } from "react";
+const features = [
+  "JWT authentication dengan verifikasi token di server",
+  "Semua endpoint CRUD dilindungi Authorization Bearer Token",
+  "Middleware untuk melindungi route dashboard",
+  "Penanganan loading, error, validasi, dan empty state",
+  "Struktur folder modular agar mudah dikembangkan",
+];
 
-type ApiItem = {
-  id: string;
-  title: string;
-  description: string;
-  createdAt: string;
-  updatedAt: string;
-};
+const workflow = [
+  "Pengguna membuka halaman login dan mengirim kredensial.",
+  "Server memvalidasi input lalu menerbitkan JWT.",
+  "Token disimpan untuk request API, sementara cookie dipakai middleware route.",
+  "Dashboard memanggil endpoint CRUD menggunakan header Authorization.",
+  "Token invalid atau sesi habis akan diarahkan kembali ke login.",
+];
 
-export default function HomePage() {
-  const [email, setEmail] = useState("admin@example.com");
-  const [password, setPassword] = useState("admin123");
-  const [token, setToken] = useState("");
-  const [message, setMessage] = useState("Belum ada aksi");
+const stack = ["Next.js App Router", "TypeScript", "REST API Route Handlers", "JWT (jose)", "bcryptjs"];
 
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [items, setItems] = useState<ApiItem[]>([]);
-
-  const shortToken = useMemo(() => {
-    if (!token) {
-      return "-";
-    }
-
-    return `${token.slice(0, 20)}...`;
-  }, [token]);
-
-  async function register() {
-    const response = await fetch("/api/auth/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
-
-    const data = await response.json();
-    if (!response.ok) {
-      setMessage(data.message ?? "Register gagal");
-      return;
-    }
-
-    setToken(data.token);
-    setMessage(`Register sukses: ${data.user.email}`);
-  }
-
-  async function login() {
-    const response = await fetch("/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
-
-    const data = await response.json();
-    if (!response.ok) {
-      setMessage(data.message ?? "Login gagal");
-      return;
-    }
-
-    setToken(data.token);
-    setMessage(`Login sukses: ${data.user.email}`);
-  }
-
-  async function loadItems() {
-    const response = await fetch("/api/items", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    const data = await response.json();
-    if (!response.ok) {
-      setMessage(data.message ?? "Gagal ambil data");
-      return;
-    }
-
-    setItems(data.items ?? []);
-    setMessage("Data berhasil diambil");
-  }
-
-  async function createItem() {
-    const response = await fetch("/api/items", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ title, description }),
-    });
-
-    const data = await response.json();
-    if (!response.ok) {
-      setMessage(data.message ?? "Gagal tambah item");
-      return;
-    }
-
-    setTitle("");
-    setDescription("");
-    setMessage("Item berhasil ditambahkan");
-    await loadItems();
-  }
-
-  async function updateItem(item: ApiItem) {
-    const newTitle = window.prompt("Judul baru", item.title);
-    if (!newTitle) {
-      return;
-    }
-
-    const newDescription = window.prompt("Deskripsi baru", item.description) ?? "";
-
-    const response = await fetch(`/api/items/${item.id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ title: newTitle, description: newDescription }),
-    });
-
-    const data = await response.json();
-    if (!response.ok) {
-      setMessage(data.message ?? "Gagal update item");
-      return;
-    }
-
-    setMessage("Item berhasil diupdate");
-    await loadItems();
-  }
-
-  async function deleteItem(itemId: string) {
-    const response = await fetch(`/api/items/${itemId}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    const data = await response.json();
-    if (!response.ok) {
-      setMessage(data.message ?? "Gagal hapus item");
-      return;
-    }
-
-    setMessage("Item berhasil dihapus");
-    await loadItems();
-  }
-
+export default function LandingPage() {
   return (
-    <main>
-      <h1>Login JWT + CRUD Header Authorization</h1>
-      <p className="small">
-        Default user: <strong>admin@example.com</strong> / <strong>admin123</strong>
-      </p>
+    <main className="container page-wrap">
+      <section className="hero panel">
+        <h1>Next.js MVP untuk JWT Login dan CRUD</h1>
+        <p>
+          Proyek ini disusun untuk kebutuhan internship Web2 dengan fokus pada fondasi engineering:
+          autentikasi JWT, route protection, API terstruktur, dan antarmuka yang jelas untuk proses uji.
+        </p>
+        <div className="row">
+          <Link className="button-link" href="/login">
+            Mulai dari Login
+          </Link>
+          <Link className="button-link secondary-link" href="/dashboard">
+            Buka Dashboard
+          </Link>
+        </div>
+      </section>
 
-      <div className="grid">
-        <section className="card">
-          <h2>Auth</h2>
-          <label htmlFor="email">Email</label>
-          <input
-            id="email"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-            placeholder="email"
-          />
+      <section className="grid two-columns">
+        <article className="panel">
+          <h2>Fitur Utama</h2>
+          <ul className="list">
+            {features.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+        </article>
 
-          <label htmlFor="password">Password</label>
-          <input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-            placeholder="password"
-          />
+        <article className="panel">
+          <h2>Alur Kerja</h2>
+          <ol className="list ordered">
+            {workflow.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ol>
+        </article>
+      </section>
 
-          <div className="row">
-            <button onClick={register}>Register</button>
-            <button className="secondary" onClick={login}>
-              Login
-            </button>
-          </div>
-
-          <p className="small">Token singkat: {shortToken}</p>
-          <p className="small">
-            Header yang dipakai: <code>Authorization: Bearer {'{'}token{'}'}</code>
+      <section className="grid three-columns">
+        <article className="panel">
+          <h3>Arsitektur</h3>
+          <p>
+            Lapisan dibagi menjadi halaman, komponen, hooks, services, constants, utilities, middleware,
+            dan API handler agar setiap berkas memiliki tanggung jawab tunggal.
           </p>
-        </section>
+        </article>
 
-        <section className="card">
-          <h2>Tambah Item</h2>
-          <label htmlFor="title">Title</label>
-          <input
-            id="title"
-            value={title}
-            onChange={(event) => setTitle(event.target.value)}
-            placeholder="Masukkan judul"
-          />
+        <article className="panel">
+          <h3>Authentication Flow</h3>
+          <p>
+            Login menghasilkan JWT. Token dipakai sebagai Bearer Token untuk CRUD, sedangkan cookie aman
+            menjaga akses ke route dashboard.
+          </p>
+        </article>
 
-          <label htmlFor="description">Description</label>
-          <textarea
-            id="description"
-            rows={3}
-            value={description}
-            onChange={(event) => setDescription(event.target.value)}
-            placeholder="Masukkan deskripsi"
-          />
+        <article className="panel">
+          <h3>CRUD Flow</h3>
+          <p>
+            Modul dashboard mendukung create, read, update, dan delete. Setiap aksi menampilkan status
+            loading, feedback sukses, validasi input, serta konfirmasi sebelum hapus data.
+          </p>
+        </article>
+      </section>
 
-          <div className="row">
-            <button onClick={createItem}>Create</button>
-            <button className="secondary" onClick={loadItems}>
-              Refresh Data
-            </button>
-          </div>
-        </section>
-      </div>
-
-      <section className="card" style={{ marginTop: "1rem" }}>
-        <h2>Daftar Item Saya</h2>
-        <p className="small">Status: {message}</p>
-
-        <div className="item-list">
-          {items.length === 0 && <p className="small">Belum ada data.</p>}
-          {items.map((item) => (
-            <article key={item.id} className="item">
-              <h3>{item.title}</h3>
-              <p>{item.description || "(tanpa deskripsi)"}</p>
-              <p className="small">ID: {item.id}</p>
-              <div className="row">
-                <button className="secondary" onClick={() => updateItem(item)}>
-                  Update
-                </button>
-                <button className="danger" onClick={() => deleteItem(item.id)}>
-                  Delete
-                </button>
-              </div>
-            </article>
+      <section className="panel">
+        <h2>Technology Stack</h2>
+        <div className="chip-list">
+          {stack.map((item) => (
+            <span key={item} className="chip">
+              {item}
+            </span>
           ))}
         </div>
       </section>
+
+      <section className="panel cta-panel">
+        <h2>Siap untuk Pengujian</h2>
+        <p>
+          Gunakan akun default admin@example.com dengan kata sandi admin123 untuk menguji alur login,
+          protected route, dan operasi CRUD secara menyeluruh.
+        </p>
+        <Link className="button-link" href="/login">
+          Uji MVP Sekarang
+        </Link>
+      </section>
+
+      <footer className="footer-note">
+        <p>
+          Dibangun sebagai MVP assignment: bersih, terstruktur, dan siap dikembangkan ke database
+          produksi serta role-based authorization.
+        </p>
+      </footer>
     </main>
   );
 }
