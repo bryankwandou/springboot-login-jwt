@@ -3,8 +3,8 @@ import { SiteHeader } from "@/components/layout/site-header";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Next.js JWT CRUD MVP",
-  description: "MVP internship dengan JWT authentication, protected route, dan modul CRUD berbasis REST API.",
+  title: "Sistem Akses Data JWT",
+  description: "Aplikasi autentikasi JWT dengan protected route dan modul CRUD berbasis REST API.",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

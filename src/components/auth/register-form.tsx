@@ -75,8 +75,8 @@ export function RegisterForm() {
 
   return (
     <form className="panel form-panel" onSubmit={handleSubmit} noValidate>
-      <h1>Buat Akun Baru</h1>
-      <p className="muted">Isi data akun untuk mulai menggunakan dashboard.</p>
+      <h1>Registrasi Akun</h1>
+      <p className="muted">Isi data yang diperlukan untuk memperoleh akses ke sistem.</p>
 
       <label htmlFor="register-email">Email</label>
       <input
@@ -119,7 +119,7 @@ export function RegisterForm() {
       )}
 
       <button type="submit" disabled={loading}>
-        {loading ? "Memproses registrasi..." : "Daftarkan Akun"}
+        {loading ? "Memproses registrasi..." : "Simpan Akun"}
       </button>
     </form>
   );

@@ -1,119 +1,154 @@
 import Link from "next/link";
 
-const features = [
-  "JWT authentication dengan verifikasi token di server",
-  "Semua endpoint CRUD dilindungi Authorization Bearer Token",
-  "Middleware untuk melindungi route dashboard",
-  "Penanganan loading, error, validasi, dan empty state",
-  "Struktur folder modular agar mudah dikembangkan",
+const highlights = [
+  {
+    label: "Auth layer",
+    value: "JWT + Bearer header",
+  },
+  {
+    label: "Access control",
+    value: "Protected route + token check",
+  },
+  {
+    label: "Data flow",
+    value: "CRUD request per user session",
+  },
 ];
 
-const workflow = [
-  "Pengguna membuka halaman login dan mengirim kredensial.",
-  "Server memvalidasi input lalu menerbitkan JWT.",
-  "Token disimpan untuk request API, sementara cookie dipakai middleware route.",
-  "Dashboard memanggil endpoint CRUD menggunakan header Authorization.",
-  "Token invalid atau sesi habis akan diarahkan kembali ke login.",
+const principles = [
+  "Autentikasi dilakukan di server sebelum data dikirim.",
+  "Tidak ada seeded account atau data contoh yang tampil ke publik.",
+  "Setiap aksi CRUD memerlukan token aktif milik pengguna.",
+  "Status loading, error, empty, dan success ditampilkan konsisten.",
 ];
 
-const stack = ["Next.js App Router", "TypeScript", "REST API Route Handlers", "JWT (jose)", "bcryptjs"];
+const stack = ["Next.js App Router", "TypeScript", "Route Handlers", "JWT (jose)", "bcryptjs"];
 
 export default function LandingPage() {
   return (
-    <main className="container page-wrap">
-      <section className="hero panel">
-        <h1>Next.js MVP untuk JWT Login dan CRUD</h1>
-        <p>
-          Aplikasi ini menampilkan implementasi autentikasi JWT dan operasi CRUD dengan pendekatan
-          arsitektur modular agar siap ditingkatkan ke lingkungan produksi.
-        </p>
-        <div className="row">
-          <Link className="button-link" href="/register">
-            Buat Akun
-          </Link>
+    <main className="landing-shell">
+      <div className="container page-wrap landing-grid">
+        <section className="hero card hero-split">
+          <div className="hero-copy">
+            <p className="eyebrow">JWT access system</p>
+            <h1>Landing page yang lebih tenang, lebih tegas, dan tidak terasa seperti template tutorial.</h1>
+            <p className="hero-description">
+              Sistem ini menampilkan autentikasi JWT, route terproteksi, dan CRUD berbasis token dalam
+              susunan yang ringkas untuk evaluasi teknis dan presentasi audit.
+            </p>
+
+            <div className="row hero-actions">
+              <Link className="button-link" href="/register">
+                Registrasi
+              </Link>
+              <Link className="button-link secondary-link" href="/login">
+                Masuk
+              </Link>
+              <Link className="button-link ghost-link" href="/dashboard">
+                Dashboard
+              </Link>
+            </div>
+          </div>
+
+          <aside className="hero-aside" aria-label="Ikhtisar sistem">
+            <div className="signal-card signal-primary">
+              <span>Access posture</span>
+              <strong>Protected by bearer token</strong>
+            </div>
+
+            <div className="signal-card signal-secondary">
+              <span>Data policy</span>
+              <strong>No seeded user, no public dummy content</strong>
+            </div>
+
+            <div className="signal-stack">
+              {highlights.map((item) => (
+                <div key={item.label} className="signal-row">
+                  <span>{item.label}</span>
+                  <strong>{item.value}</strong>
+                </div>
+              ))}
+            </div>
+          </aside>
+        </section>
+
+        <section className="panel principle-panel">
+          <div className="section-head">
+            <p className="eyebrow">Clarification points</p>
+            <h2>Hal yang diperjelas untuk audit</h2>
+          </div>
+
+          <div className="principle-grid">
+            {principles.map((item) => (
+              <article key={item} className="principle-item">
+                <span className="principle-dot" aria-hidden="true" />
+                <p>{item}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="grid two-columns compact-grid">
+          <article className="panel surface-panel">
+            <div className="section-head">
+              <p className="eyebrow">Architecture</p>
+              <h2>Struktur yang dipisah per tanggung jawab</h2>
+            </div>
+            <p>
+              Frontend, route handler, auth utility, service client, dan store dipisah agar alur login
+              dan CRUD mudah ditelusuri tanpa menampilkan perilaku seperti project latihan.
+            </p>
+          </article>
+
+          <article className="panel surface-panel">
+            <div className="section-head">
+              <p className="eyebrow">Flow</p>
+              <h2>Urutan interaksi pengguna</h2>
+            </div>
+            <ol className="list ordered subtle-list">
+              <li>Registrasi akun baru.</li>
+              <li>Login untuk menerima token aktif.</li>
+              <li>Akses dashboard dan kelola data sendiri.</li>
+              <li>Logout untuk menghapus token lokal.</li>
+            </ol>
+          </article>
+        </section>
+
+        <section className="panel tech-panel">
+          <div className="section-head">
+            <p className="eyebrow">Stack</p>
+            <h2>Teknologi yang dipakai</h2>
+          </div>
+          <div className="chip-list">
+            {stack.map((item) => (
+              <span key={item} className="chip">
+                {item}
+              </span>
+            ))}
+          </div>
+        </section>
+
+        <section className="panel cta-panel final-cta">
+          <div>
+            <p className="eyebrow">Action</p>
+            <h2>Masuk untuk melihat alur lengkapnya.</h2>
+            <p>
+              Tidak ada data contoh yang disamarkan sebagai konten publik. Semua entri berasal dari aksi
+              pengguna saat runtime.
+            </p>
+          </div>
           <Link className="button-link" href="/login">
-            Login
+            Buka Formulir Masuk
           </Link>
-          <Link className="button-link secondary-link" href="/dashboard">
-            Buka Dashboard
-          </Link>
-        </div>
-      </section>
+        </section>
 
-      <section className="grid two-columns">
-        <article className="panel">
-          <h2>Fitur Utama</h2>
-          <ul className="list">
-            {features.map((item) => (
-              <li key={item}>{item}</li>
-            ))}
-          </ul>
-        </article>
-
-        <article className="panel">
-          <h2>Alur Kerja</h2>
-          <ol className="list ordered">
-            {workflow.map((item) => (
-              <li key={item}>{item}</li>
-            ))}
-          </ol>
-        </article>
-      </section>
-
-      <section className="grid three-columns">
-        <article className="panel">
-          <h3>Arsitektur</h3>
+        <footer className="footer-note landing-footer">
           <p>
-            Lapisan dibagi menjadi halaman, komponen, hooks, services, constants, utilities, middleware,
-            dan API handler agar setiap berkas memiliki tanggung jawab tunggal.
+            Dokumen klarifikasi audit tersedia, dan implementasi tetap terbuka untuk pengembangan
+            penyimpanan produksi serta kontrol akses berbasis peran.
           </p>
-        </article>
-
-        <article className="panel">
-          <h3>Authentication Flow</h3>
-          <p>
-            Login menghasilkan JWT. Token dipakai sebagai Bearer Token untuk CRUD, sedangkan cookie aman
-            menjaga akses ke route dashboard.
-          </p>
-        </article>
-
-        <article className="panel">
-          <h3>CRUD Flow</h3>
-          <p>
-            Modul dashboard mendukung create, read, update, dan delete. Setiap aksi menampilkan status
-            loading, feedback sukses, validasi input, serta konfirmasi sebelum hapus data.
-          </p>
-        </article>
-      </section>
-
-      <section className="panel">
-        <h2>Technology Stack</h2>
-        <div className="chip-list">
-          {stack.map((item) => (
-            <span key={item} className="chip">
-              {item}
-            </span>
-          ))}
-        </div>
-      </section>
-
-      <section className="panel cta-panel">
-        <h2>Siap untuk Pengujian</h2>
-        <p>
-          Mulai dengan membuat akun, lalu lakukan login untuk menguji route terproteksi dan operasi
-          CRUD berbasis Authorization Bearer Token.
-        </p>
-        <Link className="button-link" href="/login">
-          Uji MVP Sekarang
-        </Link>
-      </section>
-
-      <footer className="footer-note">
-        <p>
-          Dibangun sebagai MVP assignment: bersih, terstruktur, dan siap dikembangkan ke database
-          produksi serta role-based authorization.
-        </p>
-      </footer>
+        </footer>
+      </div>
     </main>
   );
 }

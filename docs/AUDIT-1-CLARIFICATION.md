@@ -1,18 +1,18 @@
 # Audit #1 Clarification
 
-Dokumen ini disusun sebagai klarifikasi tindak lanjut atas catatan bahwa aplikasi terlihat seperti tutorial dengan data dummy.
+Dokumen ini disusun sebagai klarifikasi tindak lanjut atas catatan bahwa antarmuka sebelumnya terlalu menyerupai halaman latihan dan memuat data contoh.
 
 ## Perbaikan yang dilakukan
-- Seeded account bawaan (`admin@example.com`) dihapus.
+- Seeded account bawaan dihapus.
 - Form login tidak lagi terisi data contoh secara otomatis.
-- Alur penggunaan diperbaiki: pengguna harus registrasi akun terlebih dahulu.
-- Landing page dan dokumentasi direvisi agar tidak menampilkan narasi data dummy.
+- Alur penggunaan diperjelas: pengguna membuat akun terlebih dahulu.
+- Landing page dan dokumentasi direvisi agar tidak menampilkan narasi data contoh.
 - Endpoint `GET /api/auth/me` ditambahkan untuk verifikasi token bearer yang sah.
 
 ## Posisi Produk Saat Ini
-- Aplikasi adalah MVP teknis untuk demonstrasi autentikasi JWT dan CRUD.
-- Data yang muncul berasal dari aksi pengguna saat runtime, bukan data contoh yang dipaketkan sebagai konten publik.
-- Penyimpanan masih in-memory (belum PostgreSQL), sehingga data tidak persisten antar restart server. Ini batasan teknis MVP dan telah dinyatakan terbuka di dokumentasi.
+- Aplikasi ini merupakan implementasi teknis untuk autentikasi JWT dan CRUD.
+- Data yang muncul berasal dari aksi pengguna saat runtime, bukan dari data contoh yang ditampilkan sebagai konten publik.
+- Penyimpanan masih in-memory (belum PostgreSQL), sehingga data tidak persisten antar restart server. Batasan ini telah dijelaskan terbuka di dokumentasi.
 
 ## Komitmen Revisi Lanjutan
 - Migrasi penyimpanan ke PostgreSQL + Prisma.
