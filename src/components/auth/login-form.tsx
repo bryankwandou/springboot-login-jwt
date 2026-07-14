@@ -8,8 +8,8 @@ import { HttpError } from "@/services/http";
 export function LoginForm() {
   const router = useRouter();
 
-  const [email, setEmail] = useState("admin@example.com");
-  const [password, setPassword] = useState("admin123");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -55,7 +55,7 @@ export function LoginForm() {
     <form className="panel form-panel" onSubmit={handleSubmit} noValidate>
       <h1>Masuk ke Dashboard</h1>
       <p className="muted">
-        Gunakan akun yang valid untuk mendapatkan token JWT dan mengakses modul CRUD.
+        Gunakan akun terdaftar untuk mendapatkan token JWT dan mengakses modul CRUD.
       </p>
 
       <label htmlFor="login-email">Email</label>

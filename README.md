@@ -10,6 +10,7 @@ MVP ini dibuat untuk assignment internship Web2 dengan fokus pada praktik engine
 ## Assumptions
 - Penyimpanan data masih in-memory (belum PostgreSQL) untuk mempermudah demo lokal.
 - Fokus tahap ini adalah fondasi arsitektur dan alur fungsional.
+- Tidak ada seeded user bawaan. Akun dibuat melalui endpoint registrasi.
 
 ## Feature Checklist
 - Landing page
@@ -45,13 +46,13 @@ docs/ARCHITECTURE.md
 ```
 
 ## Authentication Flow
-1. User login di `/login`.
+1. User registrasi di `/register` lalu login di `/login`.
 2. API memvalidasi email dan kata sandi.
 3. Server menerbitkan JWT.
 4. Token disimpan di local storage untuk header API.
-5. Cookie `httpOnly` diset untuk middleware route protection.
-6. Semua CRUD call wajib kirim `Authorization: Bearer <token>`.
-7. Logout menghapus cookie dan token lokal.
+5. Semua CRUD call wajib kirim `Authorization: Bearer <token>`.
+6. Endpoint `GET /api/auth/me` memverifikasi token aktif.
+7. Logout menghapus token lokal.
 
 ## CRUD Flow
 - Create: tambah data baru dari dashboard.
@@ -70,9 +71,10 @@ npm run dev
 Buka:
 - `http://localhost:3000`
 
-Akun default:
-- Email: `admin@example.com`
-- Password: `admin123`
+Langkah uji akun:
+1. Akses halaman register.
+2. Buat akun baru.
+3. Login dengan akun tersebut.
 
 ## Testing Checklist
 - Login success dan failure

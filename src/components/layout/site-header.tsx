@@ -17,6 +17,9 @@ export function SiteHeader() {
           <Link data-active={currentPath === "/"} href="/">
             Landing
           </Link>
+          <Link data-active={currentPath === "/register"} href="/register">
+            Register
+          </Link>
           <Link data-active={currentPath === "/login"} href="/login">
             Login
           </Link>

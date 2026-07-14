@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { AUTH_COOKIE_KEY } from "@/constants/auth";
 import { hashPassword } from "@/lib/auth";
 import { createAuthToken } from "@/lib/jwt";
 import { store } from "@/lib/store";
@@ -44,7 +43,7 @@ export async function POST(request: Request) {
     email: user.email,
   });
 
-  const response = NextResponse.json({
+  return NextResponse.json({
     message: "Register berhasil",
     token,
     user: {
@@ -52,14 +51,4 @@ export async function POST(request: Request) {
       email: user.email,
     },
   });
-
-  response.cookies.set(AUTH_COOKIE_KEY, token, {
-    httpOnly: true,
-    sameSite: "strict",
-    secure: process.env.NODE_ENV === "production",
-    path: "/",
-    maxAge: 60 * 60 * 2,
-  });
-
-  return response;
 }
