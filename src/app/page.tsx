@@ -24,12 +24,15 @@ export default function LandingPage() {
       <section className="hero panel">
         <h1>Next.js MVP untuk JWT Login dan CRUD</h1>
         <p>
-          Proyek ini disusun untuk kebutuhan internship Web2 dengan fokus pada fondasi engineering:
-          autentikasi JWT, route protection, API terstruktur, dan antarmuka yang jelas untuk proses uji.
+          Aplikasi ini menampilkan implementasi autentikasi JWT dan operasi CRUD dengan pendekatan
+          arsitektur modular agar siap ditingkatkan ke lingkungan produksi.
         </p>
         <div className="row">
+          <Link className="button-link" href="/register">
+            Buat Akun
+          </Link>
           <Link className="button-link" href="/login">
-            Mulai dari Login
+            Login
           </Link>
           <Link className="button-link secondary-link" href="/dashboard">
             Buka Dashboard
@@ -97,8 +100,8 @@ export default function LandingPage() {
       <section className="panel cta-panel">
         <h2>Siap untuk Pengujian</h2>
         <p>
-          Gunakan akun default admin@example.com dengan kata sandi admin123 untuk menguji alur login,
-          protected route, dan operasi CRUD secara menyeluruh.
+          Mulai dengan membuat akun, lalu lakukan login untuk menguji route terproteksi dan operasi
+          CRUD berbasis Authorization Bearer Token.
         </p>
         <Link className="button-link" href="/login">
           Uji MVP Sekarang

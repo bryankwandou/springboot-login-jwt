@@ -3,7 +3,11 @@
 ## Assumptions
 - MVP uses in-memory storage for users and items to keep setup simple.
 - JWT secret is read from `JWT_SECRET` and falls back to a development value.
-- Protected UI route is `/dashboard` and is guarded by middleware.
+- Protected UI route is `/dashboard` and is guarded by token presence checks in the dashboard client.
+- No seeded default user is included in runtime data.
+
+## Audit Notes
+- See `docs/AUDIT-1-CLARIFICATION.md` for legal review follow-up and corrective actions.
 
 ## Layer Overview
 - `src/app`: Routes and API handlers.
