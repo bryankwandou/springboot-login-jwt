@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { authenticateRequest } from "@/lib/auth";
-import { store } from "@/lib/store";
+import { ensureSchema, sql } from "@/lib/db";
 
 type RouteContext = {
   params: Promise<{ id: string }>;
@@ -13,13 +13,17 @@ export async function GET(request: NextRequest, context: RouteContext) {
   }
 
   const { id } = await context.params;
-  const item = store.items.find((entry) => entry.id === id && entry.ownerId === authPayload.userId);
+  await ensureSchema();
+  const rows = await sql`
+    SELECT id, title, description, owner_id AS "ownerId", created_at AS "createdAt", updated_at AS "updatedAt"
+    FROM items WHERE id = ${id} AND owner_id = ${authPayload.userId}
+  `;
 
-  if (!item) {
-    return NextResponse.json({ message: "Item tidak ditemukan" }, { status: 404 });
+  if (!rows[0]) {
+    return NextResponse.json({ message: "Catatan tidak ditemukan" }, { status: 404 });
   }
 
-  return NextResponse.json({ item });
+  return NextResponse.json({ item: rows[0] });
 }
 
 export async function PUT(request: NextRequest, context: RouteContext) {
@@ -31,20 +35,25 @@ export async function PUT(request: NextRequest, context: RouteContext) {
   const { id } = await context.params;
   const body = await request.json().catch(() => null);
 
-  const item = store.items.find((entry) => entry.id === id && entry.ownerId === authPayload.userId);
-  if (!item) {
-    return NextResponse.json({ message: "Item tidak ditemukan" }, { status: 404 });
-  }
-
   if (!body?.title) {
-    return NextResponse.json({ message: "Title wajib diisi" }, { status: 400 });
+    return NextResponse.json({ message: "Judul catatan perlu diisi." }, { status: 400 });
   }
 
-  item.title = String(body.title);
-  item.description = String(body.description ?? "");
-  item.updatedAt = new Date().toISOString();
+  await ensureSchema();
+  const title = String(body.title);
+  const description = String(body.description ?? "");
 
-  return NextResponse.json({ message: "Item berhasil diupdate", item });
+  const rows = await sql`
+    UPDATE items SET title = ${title}, description = ${description}, updated_at = now()
+    WHERE id = ${id} AND owner_id = ${authPayload.userId}
+    RETURNING id, title, description, owner_id AS "ownerId", created_at AS "createdAt", updated_at AS "updatedAt"
+  `;
+
+  if (!rows[0]) {
+    return NextResponse.json({ message: "Catatan tidak ditemukan" }, { status: 404 });
+  }
+
+  return NextResponse.json({ message: "Catatan berhasil diperbarui", item: rows[0] });
 }
 
 export async function DELETE(request: NextRequest, context: RouteContext) {
@@ -54,14 +63,16 @@ export async function DELETE(request: NextRequest, context: RouteContext) {
   }
 
   const { id } = await context.params;
-  const itemIndex = store.items.findIndex(
-    (entry) => entry.id === id && entry.ownerId === authPayload.userId,
-  );
+  await ensureSchema();
 
-  if (itemIndex < 0) {
-    return NextResponse.json({ message: "Item tidak ditemukan" }, { status: 404 });
+  const rows = await sql`
+    DELETE FROM items WHERE id = ${id} AND owner_id = ${authPayload.userId}
+    RETURNING id, title, description, owner_id AS "ownerId", created_at AS "createdAt", updated_at AS "updatedAt"
+  `;
+
+  if (!rows[0]) {
+    return NextResponse.json({ message: "Catatan tidak ditemukan" }, { status: 404 });
   }
 
-  const [deleted] = store.items.splice(itemIndex, 1);
-  return NextResponse.json({ message: "Item berhasil dihapus", item: deleted });
+  return NextResponse.json({ message: "Catatan berhasil dihapus", item: rows[0] });
 }

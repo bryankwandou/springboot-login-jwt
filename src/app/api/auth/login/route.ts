@@ -2,14 +2,14 @@ import { NextResponse } from "next/server";
 import { AUTH_COOKIE_NAME } from "@/constants/auth";
 import { verifyPassword } from "@/lib/auth";
 import { createAuthToken } from "@/lib/jwt";
-import { store } from "@/lib/store";
+import { ensureSchema, sql } from "@/lib/db";
 
 export async function POST(request: Request) {
   const body = await request.json().catch(() => null);
 
   if (!body?.email || !body?.password) {
     return NextResponse.json(
-      { message: "Email dan kata sandi wajib diisi." },
+      { message: "Email dan kata sandi perlu diisi." },
       { status: 400 },
     );
   }
@@ -18,26 +18,29 @@ export async function POST(request: Request) {
   const password = String(body.password);
 
   if (!email.includes("@")) {
-    return NextResponse.json({ message: "Format email tidak valid." }, { status: 400 });
+    return NextResponse.json({ message: "Format email belum benar." }, { status: 400 });
   }
 
-  const user = store.users.find((item) => item.email === email);
+  await ensureSchema();
+
+  const rows = await sql`SELECT id, email, password_hash FROM users WHERE email = ${email}`;
+  const user = rows[0];
   if (!user) {
-    return NextResponse.json({ message: "Kombinasi email dan kata sandi tidak cocok." }, { status: 401 });
+    return NextResponse.json({ message: "Email atau kata sandi tidak cocok." }, { status: 401 });
   }
 
-  const isPasswordValid = await verifyPassword(password, user.passwordHash);
+  const isPasswordValid = await verifyPassword(password, user.password_hash as string);
   if (!isPasswordValid) {
-    return NextResponse.json({ message: "Kombinasi email dan kata sandi tidak cocok." }, { status: 401 });
+    return NextResponse.json({ message: "Email atau kata sandi tidak cocok." }, { status: 401 });
   }
 
   const token = await createAuthToken({
-    userId: user.id,
-    email: user.email,
+    userId: user.id as string,
+    email: user.email as string,
   });
 
   const response = NextResponse.json({
-    message: "Login berhasil",
+    message: "Berhasil masuk",
     token,
     user: {
       id: user.id,

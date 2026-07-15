@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { Eye, EyeOff, LockKeyhole, Mail } from "lucide-react";
 import { login } from "@/services/auth-client";
 import { HttpError } from "@/services/http";
 
@@ -10,6 +12,8 @@ export function LoginForm() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -18,15 +22,16 @@ export function LoginForm() {
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    setSubmitted(true);
     setError("");
 
     if (!email || !password) {
-      setError("Email dan kata sandi wajib diisi.");
+      setError("Isi email dan kata sandi lebih dulu.");
       return;
     }
 
     if (emailInvalid) {
-      setError("Format email belum sesuai.");
+      setError("Email perlu memakai format yang benar.");
       return;
     }
 
@@ -44,7 +49,7 @@ export function LoginForm() {
       if (err instanceof HttpError) {
         setError(err.message);
       } else {
-        setError("Terjadi kendala saat proses login.");
+        setError("Login belum berhasil. Coba lagi setelah beberapa saat.");
       }
     } finally {
       setLoading(false);
@@ -52,35 +57,71 @@ export function LoginForm() {
   }
 
   return (
-    <form className="panel form-panel" onSubmit={handleSubmit} noValidate>
-      <h1>Masuk ke Sistem</h1>
-      <p className="muted">
-        Gunakan akun yang telah terdaftar untuk memperoleh token JWT dan melanjutkan ke dashboard.
-      </p>
+    <form className="auth-card" onSubmit={handleSubmit} noValidate aria-busy={loading}>
+      <div className="auth-card-head">
+        <span className="auth-mark">
+          <LockKeyhole aria-hidden="true" size={20} />
+        </span>
+        <div>
+          <p className="section-kicker">Login Internal</p>
+          <h1>Masuk ke panel operasional perusahaan.</h1>
+          <p>Halaman ini digunakan untuk mengakses area kerja internal pada simulasi website korporat energi.</p>
+        </div>
+      </div>
 
-      <label htmlFor="login-email">Email</label>
-      <input
-        id="login-email"
-        type="email"
-        autoComplete="email"
-        value={email}
-        onChange={(event) => setEmail(event.target.value)}
-        aria-invalid={emailInvalid}
-      />
+      <div className="field-group">
+        <label htmlFor="login-email">Email</label>
+        <div className="input-shell">
+          <Mail aria-hidden="true" size={18} />
+          <input
+            id="login-email"
+            type="email"
+            autoComplete="email"
+            spellCheck={false}
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+            aria-invalid={emailInvalid}
+            aria-describedby={emailInvalid ? "login-email-error" : undefined}
+            placeholder="nama@email.com"
+          />
+        </div>
+        {emailInvalid && (
+          <p className="error-note" id="login-email-error">
+            Email perlu memuat tanda @.
+          </p>
+        )}
+      </div>
 
-      <label htmlFor="login-password">Kata sandi</label>
-      <input
-        id="login-password"
-        type="password"
-        autoComplete="current-password"
-        value={password}
-        onChange={(event) => setPassword(event.target.value)}
-        aria-invalid={passwordInvalid}
-      />
-
-      {(emailInvalid || passwordInvalid) && (
-        <p className="error-note">Periksa kembali format email dan panjang kata sandi.</p>
-      )}
+      <div className="field-group">
+        <label htmlFor="login-password">Kata sandi</label>
+        <div className="input-shell">
+          <LockKeyhole aria-hidden="true" size={18} />
+          <input
+            id="login-password"
+            type={showPassword ? "text" : "password"}
+            autoComplete="current-password"
+            spellCheck={false}
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+            aria-invalid={passwordInvalid}
+            aria-describedby={passwordInvalid ? "login-password-error" : undefined}
+            placeholder="minimal 6 karakter"
+          />
+          <button
+            type="button"
+            className="icon-button"
+            onClick={() => setShowPassword((value) => !value)}
+            aria-label={showPassword ? "Sembunyikan kata sandi" : "Tampilkan kata sandi"}
+          >
+            {showPassword ? <EyeOff aria-hidden="true" size={18} /> : <Eye aria-hidden="true" size={18} />}
+          </button>
+        </div>
+        {passwordInvalid && (
+          <p className="error-note" id="login-password-error">
+            Kata sandi minimal 6 karakter.
+          </p>
+        )}
+      </div>
 
       {error && (
         <div className="alert error" role="alert">
@@ -88,9 +129,15 @@ export function LoginForm() {
         </div>
       )}
 
-      <button type="submit" disabled={loading}>
-        {loading ? "Memproses masuk..." : "Masuk"}
+      <button className="button button-primary full-width" type="submit" disabled={loading}>
+        {loading ? "Memeriksa akun..." : "Masuk ke dashboard"}
       </button>
+
+      {submitted && !error && loading && <p className="form-hint">Token sedang diminta dari server.</p>}
+
+      <p className="auth-switch">
+        Belum punya akun? <Link href="/register">Buat akun demo</Link>
+      </p>
     </form>
   );
 }

@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { Eye, EyeOff, LockKeyhole, Mail, UserPlus } from "lucide-react";
 import { requestJson, HttpError } from "@/services/http";
 import { AUTH_TOKEN_KEY } from "@/constants/auth";
 
@@ -20,6 +22,7 @@ export function RegisterForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -32,12 +35,12 @@ export function RegisterForm() {
     setError("");
 
     if (!email || !password || !confirmPassword) {
-      setError("Semua kolom wajib diisi.");
+      setError("Lengkapi semua kolom sebelum membuat akun.");
       return;
     }
 
     if (emailInvalid) {
-      setError("Format email belum sesuai.");
+      setError("Email perlu memakai format yang benar.");
       return;
     }
 
@@ -47,7 +50,7 @@ export function RegisterForm() {
     }
 
     if (confirmMismatch) {
-      setError("Konfirmasi kata sandi tidak sama.");
+      setError("Konfirmasi sandi belum sama.");
       return;
     }
 
@@ -66,7 +69,7 @@ export function RegisterForm() {
       if (err instanceof HttpError) {
         setError(err.message);
       } else {
-        setError("Registrasi belum berhasil. Coba ulangi.");
+        setError("Akun belum bisa dibuat. Coba lagi beberapa saat lagi.");
       }
     } finally {
       setLoading(false);
@@ -74,43 +77,94 @@ export function RegisterForm() {
   }
 
   return (
-    <form className="panel form-panel" onSubmit={handleSubmit} noValidate>
-      <h1>Registrasi Akun</h1>
-      <p className="muted">Isi data yang diperlukan untuk memperoleh akses ke sistem.</p>
+    <form className="auth-card" onSubmit={handleSubmit} noValidate aria-busy={loading}>
+      <div className="auth-card-head">
+        <span className="auth-mark">
+          <UserPlus aria-hidden="true" size={20} />
+        </span>
+        <div>
+          <p className="section-kicker">Akun Demo</p>
+          <h1>Buat akun internal untuk simulasi korporat.</h1>
+          <p>Akun ini dipakai untuk mencoba alur masuk dan dashboard pada presentasi website perusahaan.</p>
+        </div>
+      </div>
 
-      <label htmlFor="register-email">Email</label>
-      <input
-        id="register-email"
-        type="email"
-        autoComplete="email"
-        value={email}
-        onChange={(event) => setEmail(event.target.value)}
-        aria-invalid={emailInvalid}
-      />
+      <div className="field-group">
+        <label htmlFor="register-email">Email</label>
+        <div className="input-shell">
+          <Mail aria-hidden="true" size={18} />
+          <input
+            id="register-email"
+            type="email"
+            autoComplete="email"
+            spellCheck={false}
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+            aria-invalid={emailInvalid}
+            aria-describedby={emailInvalid ? "register-email-error" : undefined}
+            placeholder="nama@email.com"
+          />
+        </div>
+        {emailInvalid && (
+          <p className="error-note" id="register-email-error">
+            Email perlu memuat tanda @.
+          </p>
+        )}
+      </div>
 
-      <label htmlFor="register-password">Kata sandi</label>
-      <input
-        id="register-password"
-        type="password"
-        autoComplete="new-password"
-        value={password}
-        onChange={(event) => setPassword(event.target.value)}
-        aria-invalid={passwordInvalid}
-      />
+      <div className="field-group">
+        <label htmlFor="register-password">Kata sandi</label>
+        <div className="input-shell">
+          <LockKeyhole aria-hidden="true" size={18} />
+          <input
+            id="register-password"
+            type={showPassword ? "text" : "password"}
+            autoComplete="new-password"
+            spellCheck={false}
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+            aria-invalid={passwordInvalid}
+            aria-describedby={passwordInvalid ? "register-password-error" : undefined}
+            placeholder="minimal 6 karakter"
+          />
+          <button
+            type="button"
+            className="icon-button"
+            onClick={() => setShowPassword((value) => !value)}
+            aria-label={showPassword ? "Sembunyikan kata sandi" : "Tampilkan kata sandi"}
+          >
+            {showPassword ? <EyeOff aria-hidden="true" size={18} /> : <Eye aria-hidden="true" size={18} />}
+          </button>
+        </div>
+        {passwordInvalid && (
+          <p className="error-note" id="register-password-error">
+            Kata sandi minimal 6 karakter.
+          </p>
+        )}
+      </div>
 
-      <label htmlFor="register-confirm-password">Konfirmasi kata sandi</label>
-      <input
-        id="register-confirm-password"
-        type="password"
-        autoComplete="new-password"
-        value={confirmPassword}
-        onChange={(event) => setConfirmPassword(event.target.value)}
-        aria-invalid={confirmMismatch}
-      />
-
-      {(emailInvalid || passwordInvalid || confirmMismatch) && (
-        <p className="error-note">Periksa kembali format email dan kesesuaian kata sandi.</p>
-      )}
+      <div className="field-group">
+        <label htmlFor="register-confirm-password">Ulangi kata sandi</label>
+        <div className="input-shell">
+          <LockKeyhole aria-hidden="true" size={18} />
+          <input
+            id="register-confirm-password"
+            type={showPassword ? "text" : "password"}
+            autoComplete="new-password"
+            spellCheck={false}
+            value={confirmPassword}
+            onChange={(event) => setConfirmPassword(event.target.value)}
+            aria-invalid={confirmMismatch}
+            aria-describedby={confirmMismatch ? "register-confirm-error" : undefined}
+            placeholder="ketik ulang sandi"
+          />
+        </div>
+        {confirmMismatch && (
+          <p className="error-note" id="register-confirm-error">
+            Isinya belum sama dengan sandi pertama.
+          </p>
+        )}
+      </div>
 
       {error && (
         <div className="alert error" role="alert">
@@ -118,9 +172,13 @@ export function RegisterForm() {
         </div>
       )}
 
-      <button type="submit" disabled={loading}>
-        {loading ? "Memproses registrasi..." : "Simpan Akun"}
+      <button className="button button-primary full-width" type="submit" disabled={loading}>
+        {loading ? "Membuat akses..." : "Buat akun dan masuk"}
       </button>
+
+      <p className="auth-switch">
+        Sudah punya akun? <Link href="/login">Masuk di sini</Link>
+      </p>
     </form>
   );
 }
