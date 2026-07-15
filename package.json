@@ -1,23 +1,25 @@
 {
   "name": "springboot-login-jwt",
   "version": "1.0.0",
-  "description": "Next.js JWT login and CRUD with Authorization header",
+  "description": "Corporate energy website dummy with internal login, dashboard, and JWT flow",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint ."
   },
   "keywords": [],
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "@neondatabase/serverless": "^1.1.0",
     "bcryptjs": "^3.0.3",
     "clsx": "^2.1.1",
     "framer-motion": "^12.42.2",
     "jose": "^6.2.3",
     "lucide-react": "^1.24.0",
     "next": "^16.2.10",
+    "pg": "^8.22.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "tailwind-merge": "^3.6.0"
@@ -25,6 +27,7 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4.3.2",
     "@types/node": "^26.1.1",
+    "@types/pg": "^8.20.0",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
     "autoprefixer": "^10.5.2",

@@ -2,14 +2,14 @@ import { NextResponse } from "next/server";
 import { AUTH_COOKIE_NAME } from "@/constants/auth";
 import { hashPassword } from "@/lib/auth";
 import { createAuthToken } from "@/lib/jwt";
-import { store } from "@/lib/store";
+import { ensureSchema, sql } from "@/lib/db";
 
 export async function POST(request: Request) {
   const body = await request.json().catch(() => null);
 
   if (!body?.email || !body?.password) {
     return NextResponse.json(
-      { message: "Email dan kata sandi wajib diisi." },
+      { message: "Email dan kata sandi perlu diisi." },
       { status: 400 },
     );
   }
@@ -18,26 +18,30 @@ export async function POST(request: Request) {
   const password = String(body.password);
 
   if (!email.includes("@")) {
-    return NextResponse.json({ message: "Format email tidak valid." }, { status: 400 });
+    return NextResponse.json({ message: "Format email belum benar." }, { status: 400 });
   }
 
   if (password.trim().length < 6) {
-    return NextResponse.json({ message: "Kata sandi minimal 6 karakter." }, { status: 400 });
+    return NextResponse.json({ message: "Kata sandi perlu berisi minimal 6 karakter." }, { status: 400 });
   }
 
-  const emailExists = store.users.some((user) => user.email === email);
-  if (emailExists) {
-    return NextResponse.json({ message: "Email sudah digunakan." }, { status: 409 });
+  await ensureSchema();
+
+  const existing = await sql`SELECT id FROM users WHERE email = ${email}`;
+  if (existing.length > 0) {
+    return NextResponse.json({ message: "Email ini sudah dipakai." }, { status: 409 });
   }
 
   const user = {
     id: crypto.randomUUID(),
     email,
     passwordHash: await hashPassword(password),
-    createdAt: new Date().toISOString(),
   };
 
-  store.users.push(user);
+  await sql`
+    INSERT INTO users (id, email, password_hash)
+    VALUES (${user.id}, ${user.email}, ${user.passwordHash})
+  `;
 
   const token = await createAuthToken({
     userId: user.id,
@@ -45,7 +49,7 @@ export async function POST(request: Request) {
   });
 
   const response = NextResponse.json({
-    message: "Register berhasil",
+    message: "Akun berhasil dibuat",
     token,
     user: {
       id: user.id,

@@ -2,7 +2,7 @@ import { LoginForm } from "@/components/auth/login-form";
 
 export default function LoginPage() {
   return (
-    <main className="container page-wrap">
+    <main className="auth-page">
       <LoginForm />
     </main>
   );

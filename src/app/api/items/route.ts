@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { authenticateRequest } from "@/lib/auth";
-import { store } from "@/lib/store";
+import { ensureSchema, sql } from "@/lib/db";
 
 export async function GET(request: NextRequest) {
   const authPayload = await authenticateRequest(request);
@@ -8,7 +8,12 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
 
-  const items = store.items.filter((item) => item.ownerId === authPayload.userId);
+  await ensureSchema();
+  const items = await sql`
+    SELECT id, title, description, owner_id AS "ownerId", created_at AS "createdAt", updated_at AS "updatedAt"
+    FROM items WHERE owner_id = ${authPayload.userId}
+    ORDER BY created_at DESC
+  `;
   return NextResponse.json({ items });
 }
 
@@ -20,19 +25,19 @@ export async function POST(request: NextRequest) {
 
   const body = await request.json().catch(() => null);
   if (!body?.title) {
-    return NextResponse.json({ message: "Title wajib diisi" }, { status: 400 });
+    return NextResponse.json({ message: "Judul catatan perlu diisi." }, { status: 400 });
   }
 
-  const now = new Date().toISOString();
-  const item = {
-    id: crypto.randomUUID(),
-    title: String(body.title),
-    description: String(body.description ?? ""),
-    ownerId: authPayload.userId,
-    createdAt: now,
-    updatedAt: now,
-  };
+  await ensureSchema();
+  const id = crypto.randomUUID();
+  const title = String(body.title);
+  const description = String(body.description ?? "");
 
-  store.items.push(item);
-  return NextResponse.json({ message: "Item berhasil dibuat", item }, { status: 201 });
+  const rows = await sql`
+    INSERT INTO items (id, title, description, owner_id)
+    VALUES (${id}, ${title}, ${description}, ${authPayload.userId})
+    RETURNING id, title, description, owner_id AS "ownerId", created_at AS "createdAt", updated_at AS "updatedAt"
+  `;
+
+  return NextResponse.json({ message: "Catatan berhasil dibuat", item: rows[0] }, { status: 201 });
 }

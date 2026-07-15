@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { AUTH_COOKIE_NAME } from "@/constants/auth";
 
 export async function POST() {
-  const response = NextResponse.json({ message: "Logout berhasil" });
+  const response = NextResponse.json({ message: "Sesi sudah ditutup" });
 
   response.cookies.set(AUTH_COOKIE_NAME, "", {
     httpOnly: true,
